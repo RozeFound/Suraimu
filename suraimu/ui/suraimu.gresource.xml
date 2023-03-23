@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+  <gresource prefix="/com/github/RozeFound/Suraimu">
+
+    <file>style.css</file>
+    <file>style-dark.css</file>
+    
+    <file>about.ui</file>
+    <file>window.ui</file>
+    <file>placeholder.ui</file>
+    <file>theme-switcher.ui</file>
+    <file>library.ui</file>
+    <file>library-entry.ui</file>
+    
+  </gresource>
+</gresources>

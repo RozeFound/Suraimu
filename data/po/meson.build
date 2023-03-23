@@ -1,0 +1,1 @@
+i18n.gettext('suraimu', preset: 'glib')

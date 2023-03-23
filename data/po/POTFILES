@@ -1,0 +1,8 @@
+# List of source files containing translatable strings.
+suraimu.ui.about.blp
+suraimu.ui.theme-switcher.blp
+suraimu.ui.library.blp
+suraimu.ui.library-entry.blp
+suraimu.ui.window.blp
+suraimu.windows.main_window.py
+suraimu.views.library.py

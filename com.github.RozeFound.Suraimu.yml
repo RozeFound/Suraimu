@@ -1,0 +1,47 @@
+id: com.github.RozeFound.Suraimu
+sdk: org.gnome.Sdk
+runtime: org.gnome.Platform
+runtime-version: "44"
+command: suraimu
+
+finish-args:
+  - --share=network
+  - --share=ipc
+  - --socket=fallback-x11
+  - --device=dri
+  - --socket=wayland
+  - --filesystem=~/.var/app/com.valvesoftware.Steam/.steam/steam
+  - --filesystem=~/.steam/steam
+
+cleanup:
+  - /include
+  - /lib/pkgconfig
+  - /man
+  - /share/doc
+  - /share/gtk-doc
+  - /share/man
+  - /share/pkgconfig
+  - "*.la"
+  - "*.a"
+
+modules:
+
+  # PyPi Dependencies
+  - com.github.RozeFound.Suraimu.pypi-deps.yaml
+
+  # Other Dependencies
+  - name: blueprint-compiler
+    buildsystem: meson
+    sources:
+      - type: git
+        url: https://gitlab.gnome.org/jwestman/blueprint-compiler
+        tag: v0.6.0
+
+  - name: suraimu
+    builddir: true
+    buildsystem: meson
+    config-opts:
+      - -Ddevel=true
+    sources:
+      - type: dir
+        path: .

@@ -1,0 +1,42 @@
+using Gtk 4.0;
+using Adw 1;
+
+template LibraryEntry : Gtk.Box {
+
+    width-request: 200;
+    height-request: 200;
+    overflow: hidden;
+
+    Gtk.Overlay overlay {
+
+        hexpand: true;
+        vexpand: true;
+
+        [overlay]
+        Gtk.Box {
+
+            Gtk.Picture preview {
+
+                visible: false;
+                content-fit: cover;
+
+            }
+
+            Gtk.Label no_preview_label {
+
+                hexpand: true;
+                vexpand: true;
+                halign: center;
+                valign: center;
+                label: _("No Preview");
+                styles ["dim-label"]
+
+            }
+
+        }
+
+    }
+
+    styles ["card"]
+
+}

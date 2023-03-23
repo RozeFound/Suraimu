@@ -1,0 +1,41 @@
+using Gtk 4.0; 
+using Adw 1;
+
+template LibraryView : Adw.Bin {
+
+    Gtk.Box {
+        orientation: vertical;
+
+        Adw.StatusPage placeholder  {
+            title: _("Loading...");
+            hexpand: true;
+            vexpand: true;
+            styles ["dim-label"]
+        }
+
+        Gtk.ScrolledWindow scroll {
+
+            visible: false;
+
+            Gtk.FlowBox flow {
+
+                min-children-per-line: 1;
+                max-children-per-line: 100;
+
+                row-spacing: 5;
+                column-spacing: 5;
+                margin-top: 5;
+                margin-start: 5;
+                margin-bottom: 5;
+                margin-end: 5;
+                homogeneous: true;
+                halign: center;
+                selection-mode: none;
+
+            }
+
+        }
+
+    }
+
+}
