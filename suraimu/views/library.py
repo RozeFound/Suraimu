@@ -3,7 +3,7 @@ import gi
 gi.require_version('Gtk', '4.0')
 gi.require_version('Adw', '1')
 
-from gi.repository import Gtk, Adw, GLib
+from gi.repository import Gtk, Adw, GLib, GObject
 from gettext import gettext as _
 
 from suraimu.widgets.library import LibraryEntry
@@ -18,6 +18,8 @@ class Library(Adw.Bin):
     placeholder: Adw.StatusPage = Gtk.Template.Child()
     scroll: Gtk.ScrolledWindow = Gtk.Template.Child()
     flow: Gtk.FlowBox = Gtk.Template.Child()
+
+    items_per_line = GObject.property(type=int, default=0)
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -38,6 +40,7 @@ class Library(Adw.Bin):
         items = [self.steam.get_wallpaper(id) for id in item_ids]
 
         for item in items: 
+            self.items_per_line += 1
             entry = LibraryEntry(item)
             self.flow.append(entry)
 

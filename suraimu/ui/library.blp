@@ -19,8 +19,7 @@ template LibraryView : Adw.Bin {
 
             Gtk.FlowBox flow {
 
-                min-children-per-line: 1;
-                max-children-per-line: 100;
+                max-children-per-line: bind LibraryView.items_per_line;
 
                 row-spacing: 5;
                 column-spacing: 5;
@@ -29,6 +28,7 @@ template LibraryView : Adw.Bin {
                 margin-bottom: 5;
                 margin-end: 5;
                 homogeneous: true;
+                valign: start;
                 halign: center;
                 selection-mode: none;
 
