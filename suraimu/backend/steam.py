@@ -25,13 +25,19 @@ class Steam:
         self.status = "OK"
 
         if not (path := self.get_steam_path()):
-            self.status = "STEAM NOT FOUND"
+            self.status = "STEAM NOT FOUND"; return
         else: self.steam_path = path
 
-        if self.status != "OK": return
+        if not (path := self.get_library_path()):
+            self.status = "LIBRARY NOT FOUND"; return
+        else: self.library_path = path
+
+        if not (path := self.get_official_projects_directory()):
+            self.status = "APP NOT FOUND"; return
+        else: self.projects_path = path
 
         if not (path := self.get_workshop_directory()):
-            self.status = self.status = "WORKSHOP NOT ACCESIBLE"
+            self.status = "WORKSHOP NOT ACCESIBLE"; return
         else: self.workshop_path = path
 
     def get_status(self) -> str:
@@ -45,9 +51,7 @@ class Steam:
             path = Path().home() / location
             if path.exists(): return path
 
-    def get_workshop_directory(self) -> Path | None:
-
-        library_path = Path()
+    def get_library_path(self) -> Path | None:
 
         libraries_cfg = self.steam_path / "config/libraryfolders.vdf"
         if not libraries_cfg.exists(): return
@@ -55,20 +59,35 @@ class Steam:
 
         for library in libraries.get("libraryfolders", {}).values():
             if str(self.STEAM_APP_ID) in library.get("apps", {}).keys():
-                library_path = Path(library.get("path"))
+               path = Path(library.get("path"))
+               if path.exists(): return path
 
-        if library_path.exists():
-            workshop = library_path / f"steamapps/workshop/content/{self.STEAM_APP_ID}"
-            if workshop.exists(): return workshop
+    def get_workshop_directory(self) -> Path | None:
+        path = self.library_path / f"steamapps/workshop/content/{self.STEAM_APP_ID}"
+        if path.exists(): return path
+
+    def get_official_projects_directory(self) -> Path | None:
+        path = self.library_path / "steamapps/common/wallpaper_engine/projects"
+        if path.exists(): return path
 
     def list_workshop_items(self) -> list[int]:
         return [int(id.name) for id in self.workshop_path.iterdir()]
 
-    def get_wallpaper(self, id: int) -> WallpaperEntry | None:
+    def list_official_projects(self) -> list[str]:
+        return [id.name for id in self.projects_path.iterdir()]
 
-        path = self.workshop_path / str(id) 
-        project = path / "project.json"
-        if not project.exists(): return
+    def get_wallpapers(self) -> list[WallpaperEntry]: 
+        ids = self.list_workshop_items() + self.list_official_projects()
+        result = [self.get_wallpaper(id) for id in ids]
+        return [entry for entry in result if not entry]
+
+    def get_wallpaper(self, id: int | str) -> WallpaperEntry | None:
+
+        for root in (self.workshop_path, self.projects_path):
+            path = root / str(id) 
+            project = path / "project.json"
+            if project.exists(): break
+        else: return
 
         json = parse_json(project.read_text())
         preview = path / json.get("preview", "unknown")

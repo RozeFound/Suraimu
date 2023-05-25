@@ -10,13 +10,14 @@ from suraimu import config
 
 class Suraimu(Adw.Application):
 
-    def __init__(self) -> None:
+    def __init__(self, version: str) -> None:
         super().__init__(application_id=config.APP_ID, register_session=True)
         self.set_resource_base_path(config.RESOURCES)
+        print(f"Initializing Suraimu v{version}")
 
         self.create_action("about", self.show_about)
         self.create_action("preferences", self.show_preferences, ["<primary>comma"])
-        self.create_action("exit", lambda *args: quit(), ["<primary>q"])
+        self.create_action("exit", self.exit, ["<primary>q"])
 
     def create_action(self, name: str, callback: Callable, shortcuts: list[str] = None) -> None:
 
@@ -49,11 +50,17 @@ class Suraimu(Adw.Application):
         self.window = window
         window.present()
 
+    def exit(self, *args) -> None:
+        self.window.on_close_request()
+        print("Closing Suraimu...")
+        quit(0)
+
 def main(version: str, argv: list[str]) -> int:
 
-    import debugpy
-    debugpy.listen(("localhost", 5678))
+    if config.BUILD_TYPE == "dev":
+        from debugpy import listen
+        listen(("localhost", 5678))
 
-    app = Suraimu()
+    app = Suraimu(version)
     return app.run(argv)
 

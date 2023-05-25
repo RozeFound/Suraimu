@@ -35,7 +35,7 @@ modules:
     sources:
       - type: git
         url: https://gitlab.gnome.org/jwestman/blueprint-compiler
-        tag: v0.6.0
+        tag: v0.8.1
 
   - name: suraimu
     builddir: true

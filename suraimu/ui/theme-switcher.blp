@@ -1,7 +1,7 @@
 using Gtk 4.0;
 using Adw 1;
 
-template ThemeSwitcher : Gtk.Box {
+template $ThemeSwitcher : Gtk.Box {
 
     styles ["theme-switcher"]
 
@@ -10,10 +10,10 @@ template ThemeSwitcher : Gtk.Box {
 
     Gtk.CheckButton system {
 
-        visible: bind ThemeSwitcher.show-system;
+        visible: bind template.show-system;
         tooltip-text: _("Follow system style");
 
-        toggled => on_color_scheme_changed();
+        toggled => $on_color_scheme_changed();
 
         styles [
             "theme-selector",
@@ -27,7 +27,7 @@ template ThemeSwitcher : Gtk.Box {
         tooltip-text: _("Light style");
         group: system;
 
-        toggled => on_color_scheme_changed();
+        toggled => $on_color_scheme_changed();
 
         styles [
             "theme-selector",
@@ -41,7 +41,7 @@ template ThemeSwitcher : Gtk.Box {
         tooltip-text: _("Dark style");
         group: system;
 
-        toggled => on_color_scheme_changed();
+        toggled => $on_color_scheme_changed();
 
         styles [
             "theme-selector",

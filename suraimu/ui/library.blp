@@ -1,7 +1,7 @@
 using Gtk 4.0; 
 using Adw 1;
 
-template LibraryView : Adw.Bin {
+template $LibraryView : Adw.Bin {
 
     Gtk.Box {
         orientation: vertical;
@@ -19,7 +19,7 @@ template LibraryView : Adw.Bin {
 
             Gtk.FlowBox flow {
 
-                max-children-per-line: bind LibraryView.items_per_line;
+                max-children-per-line: bind template.items_per_line;
 
                 row-spacing: 5;
                 column-spacing: 5;

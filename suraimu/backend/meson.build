@@ -4,6 +4,7 @@ backenddir = join_paths(pkgdatadir, 'suraimu/backend')
 suraimu_sources = [
   '__init__.py',
   'steam.py',
+  'utils.py',
 ]
 
 install_data(suraimu_sources, install_dir: backenddir)

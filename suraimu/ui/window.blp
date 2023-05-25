@@ -14,12 +14,12 @@ menu main_options {
     }
 }
 
-template MainWindow : Adw.ApplicationWindow {
+template $MainWindow : Adw.ApplicationWindow {
 
     title: "Suraimu";
     icon-name: "com.github.RozeFound.Suraimu";
 
-    close-request => on_close_request();
+    close-request => $on_close_request();
 
     Gtk.Box {
         orientation: vertical;
@@ -28,7 +28,7 @@ template MainWindow : Adw.ApplicationWindow {
             centering-policy: strict;
 
             title-widget: Adw.ViewSwitcherTitle view_switcher_title {
-                title: bind MainWindow.title;
+                title: bind template.title;
                 stack: stack;
             };
 
