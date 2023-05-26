@@ -35,6 +35,42 @@ template $LibraryEntry : Gtk.Box {
 
         }
 
+        [overlay]
+        Gtk.Revealer revealer {
+
+            reveal-child: false;
+            transition-type: crossfade;
+            valign: end;
+
+            Gtk.Box {
+
+                halign: fill;
+                hexpand: true;
+
+                styles ["toolbar", "library-entry"]
+
+                Gtk.Label label {
+
+                    halign: start;
+                    hexpand: true;
+                    ellipsize: end;
+                    styles ["title"]
+
+                }
+
+                [end]
+                Gtk.Button info_button {
+
+                    icon-name: "info-symbolic";
+                    clicked => $on_info_button_clicked();
+                    styles ["flat"]
+
+                }
+
+            }
+
+        }
+
     }
 
     styles ["card"]

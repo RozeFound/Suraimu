@@ -2,8 +2,7 @@ import gi
 
 gi.require_version('Gtk', '4.0')
 
-from gi.repository import Gtk, GLib
-from gi.repository.GdkPixbuf import Pixbuf
+from gi.repository import Gtk
 from suraimu import config
 from suraimu.backend.steam import WallpaperEntry
 
@@ -15,20 +14,21 @@ class LibraryEntry(Gtk.Box):
     overlay: Gtk.Overlay = Gtk.Template.Child()
     no_preview_label: Gtk.Label = Gtk.Template.Child()
     preview: Gtk.Picture = Gtk.Template.Child()
+    revealer: Gtk.Revealer = Gtk.Template.Child()
+    label: Gtk.Label = Gtk.Template.Child()
+    info_button: Gtk.Button = Gtk.Template.Child()
 
     def __init__(self, wallpaper: WallpaperEntry, **kwargs) -> None:
         super().__init__(**kwargs)
 
         self.wallpaper = wallpaper
+        self.label.set_text(wallpaper.title)
 
-        if wallpaper.preview:
-            try: pixbuf = Pixbuf.new_from_file(
-                    wallpaper.preview.as_posix())
-            except GLib.Error: pixbuf = None
-            if pixbuf:
-                self.preview.set_pixbuf(pixbuf)
-                self.preview.set_visible(True)
-                self.no_preview_label.set_visible(False)
+        if wallpaper.preview: 
+            # Gtk.Picture.set_pixbuf deprecated in GTK 4.12
+            self.preview.set_filename(wallpaper.preview.as_posix())
+            self.preview.set_visible(True)
+            self.no_preview_label.set_visible(False)
 
         motion_controller = Gtk.EventControllerMotion.new()
         motion_controller.connect("enter", self.on_motion_enter)
@@ -36,7 +36,11 @@ class LibraryEntry(Gtk.Box):
         self.overlay.add_controller(motion_controller)
 
     def on_motion_enter(self, *args) -> None:
-        print(f"on_motion_enter: {self.wallpaper.title}")
+        self.revealer.set_reveal_child(True)
 
     def on_motion_leave(self, *args) -> None:
-        print(f"on_motion_leave: {self.wallpaper.title}")
+        self.revealer.set_reveal_child(False)
+
+    @Gtk.Template.Callback()
+    def on_info_button_clicked(self, *args) -> None:
+        print(self.wallpaper.title, "info button clicked")

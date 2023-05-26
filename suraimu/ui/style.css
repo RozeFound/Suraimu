@@ -50,3 +50,9 @@ checkbutton.theme-selector radio:checked {
   background-color: @theme_selected_bg_color;
   color: @theme_selected_fg_color;
 }
+
+.library-entry {
+  background-color: @theme_bg_color;
+  margin: 3px;
+  border-radius: 10px;
+}

@@ -67,7 +67,7 @@ class Steam:
         if path.exists(): return path
 
     def get_official_projects_directory(self) -> Path | None:
-        path = self.library_path / "steamapps/common/wallpaper_engine/projects"
+        path = self.library_path / "steamapps/common/wallpaper_engine/projects/defaultprojects"
         if path.exists(): return path
 
     def list_workshop_items(self) -> list[int]:
@@ -79,7 +79,7 @@ class Steam:
     def get_wallpapers(self) -> list[WallpaperEntry]: 
         ids = self.list_workshop_items() + self.list_official_projects()
         result = [self.get_wallpaper(id) for id in ids]
-        return [entry for entry in result if not entry]
+        return [entry for entry in result if entry]
 
     def get_wallpaper(self, id: int | str) -> WallpaperEntry | None:
 
