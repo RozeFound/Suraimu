@@ -8,13 +8,15 @@ class WallpaperEntry:
 
     id: int
     type: str
+    official: bool
 
     title: str
     rating: str
-    description: str
+    description: str | None
 
     preview: Path | None
-    tags: list[str]
+    tags: list[str] | None
+    path: Path
 
 class Steam:
 
@@ -94,10 +96,12 @@ class Steam:
 
         return WallpaperEntry(
             id=json.get("workshopid", 0),
-            type=json.get("type", "unknown"),
+            official=json.get("official", False),
+            type=json.get("type"),
             title=json.get("title", "unknown"),
-            rating=json.get("contentrating", "unknown"),
-            description=json.get("description", "No description"),
+            rating=json.get("contentrating", "Everyone"),
+            description=json.get("description"),
             preview=preview if preview.exists() else None,
-            tags=json.get("tags", [])
+            tags=json.get("tags"),
+            path=path
         )

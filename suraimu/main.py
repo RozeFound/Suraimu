@@ -5,7 +5,8 @@ gi.require_version('Gtk', '4.0')
 gi.require_version('Adw', '1')
 
 from gi.repository import Gtk, Adw, Gio
-from suraimu.windows.main_window import MainWindow
+from suraimu.windows.application import MainWindow
+from suraimu.windows.preferences import PreferencesWindow
 from suraimu import config
 
 class Suraimu(Adw.Application):
@@ -28,6 +29,11 @@ class Suraimu(Adw.Application):
         if shortcuts: self.set_accels_for_action(f"app.{name}", shortcuts)
 
     def show_preferences(self, *args) -> None:
+
+        preferences = PreferencesWindow(application=self)
+        preferences.set_transient_for(self.window)
+        preferences.present()
+
         print("app.preferences callback activated")
 
     def show_about(self, *args) -> None:

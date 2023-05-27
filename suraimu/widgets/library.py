@@ -5,6 +5,8 @@ gi.require_version('Gtk', '4.0')
 from gi.repository import Gtk
 from suraimu import config
 from suraimu.backend.steam import WallpaperEntry
+from suraimu.windows.information import InfoWindow
+from suraimu.backend.utils import Async
 
 @Gtk.Template(resource_path=f"{config.RESOURCES}/library-entry.ui")
 class LibraryEntry(Gtk.Box):
@@ -23,17 +25,22 @@ class LibraryEntry(Gtk.Box):
 
         self.wallpaper = wallpaper
         self.label.set_text(wallpaper.title)
+        self.image: Gtk.Image | None = None
 
-        if wallpaper.preview: 
-            # Gtk.Picture.set_pixbuf deprecated in GTK 4.12
-            self.preview.set_filename(wallpaper.preview.as_posix())
-            self.preview.set_visible(True)
-            self.no_preview_label.set_visible(False)
+        if wallpaper.preview: self.load_preview(wallpaper.preview.as_posix())
 
         motion_controller = Gtk.EventControllerMotion.new()
         motion_controller.connect("enter", self.on_motion_enter)
         motion_controller.connect("leave", self.on_motion_leave)
         self.overlay.add_controller(motion_controller)
+
+    @Async.function
+    def load_preview(self, preview_path: str) -> None:
+        # Gtk.Picture.set_pixbuf deprecated in GTK 4.12
+        self.image = Gtk.Image.new_from_file(preview_path)
+        self.preview.set_paintable(self.image.get_paintable())
+        self.preview.set_visible(True)
+        self.no_preview_label.set_visible(False)
 
     def on_motion_enter(self, *args) -> None:
         self.revealer.set_reveal_child(True)
@@ -43,4 +50,7 @@ class LibraryEntry(Gtk.Box):
 
     @Gtk.Template.Callback()
     def on_info_button_clicked(self, *args) -> None:
-        print(self.wallpaper.title, "info button clicked")
+
+        info_window = InfoWindow(self.image, self.wallpaper)
+        info_window.set_transient_for()
+        info_window.present()

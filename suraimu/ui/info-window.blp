@@ -1,0 +1,131 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $InfoWindow : Adw.Window {
+
+    default-width: 800;
+    default-height: 450;
+
+    Gtk.Box {
+
+        orientation: vertical;
+
+        Adw.HeaderBar {
+
+            centering-policy: strict;
+
+            Gtk.Button {
+
+                label: "Apply";
+                clicked => $on_apply_button_clicked();
+                styles ["suggested-action"]
+
+            }
+
+            [end]
+            Gtk.Button {
+
+                icon-name: "preferences-system-symbolic";
+                clicked => $on_preferences_button_clicked();
+
+            }
+
+            [end]
+            Gtk.Button {
+
+                icon-name: "folder-open-symbolic";
+                clicked => $on_folder_button_clicked();
+
+            }
+
+        }
+
+        Gtk.Box {
+
+            orientation: horizontal;
+
+            hexpand: true;
+            vexpand: true;
+
+            Gtk.Picture preview {
+
+                margin-top: 15;
+                margin-bottom: 15;
+                margin-start: 15;
+
+                width-request: 400;
+                height-request: 400;
+
+                valign: start;
+                content-fit: cover;
+                keep-aspect-ratio: true;
+                styles ["card"]
+
+            }
+
+            Adw.PreferencesPage {
+
+                valign: start;
+                hexpand: true;
+
+                Adw.PreferencesGroup {
+
+                    title: _("Properties");
+
+                    Adw.ActionRow id_property {
+
+                        title: _("ID");
+                        tooltip-text: _("Wallpaper Workshop ID");
+                        styles ["property"]
+
+                    }
+
+                    Adw.ActionRow type_property {
+
+                        title: _("Type");
+                        tooltip-text: _("Wallpaper Type");
+                        styles ["property"]
+
+                    }
+
+
+                    Adw.ActionRow rating_property {
+
+                        title: _("Rating");
+                        tooltip-text: _("Wallpaper Age Rating");
+                        styles ["property"]
+                        
+                    }
+
+                    Adw.ActionRow tags_property {
+
+                        visible: false;
+                        title: _("Tags");
+                        tooltip-text: _("Wallpaper Tags");
+                        styles ["property"]
+                        
+                    }
+
+                }
+
+                Adw.PreferencesGroup description_property_group {
+
+                    title: _("Description");
+                    visible: false;
+
+                    Adw.ActionRow description_property {
+
+                        use-markup: true;
+                        tooltip-text: _("Wallpaper Description");
+                        
+                    }
+
+                }
+
+            }
+
+        }
+        
+    }
+  
+}

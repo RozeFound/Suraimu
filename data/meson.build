@@ -55,8 +55,12 @@ install_data ( join_paths(scalable_dir, APP_ICON),
   install_dir: join_paths(get_option('prefix'), get_option('datadir'), scalable_dir)
 )
 
-symbolic_dir = join_paths('icons', 'hicolor', 'symbolic', 'apps')
-install_data ( join_paths(symbolic_dir, APP_SYMBOLIC_ICON),
+symbolic_dir = join_paths('icons', 'hicolor', 'symbolic')
+install_data ( join_paths(symbolic_dir, 'apps', APP_SYMBOLIC_ICON),
+  install_dir: join_paths(get_option('prefix'), get_option('datadir'), symbolic_dir, 'apps')
+)
+
+install_data ( join_paths(symbolic_dir, 'people-symbolic.svg'),
   install_dir: join_paths(get_option('prefix'), get_option('datadir'), symbolic_dir)
 )
 

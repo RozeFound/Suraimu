@@ -3,6 +3,7 @@
   <gresource prefix="/com/github/RozeFound/Suraimu">
 
     <file>style.css</file>
+    <file>style-hc.css</file>
     <file>style-dark.css</file>
     
     <file>about.ui</file>
@@ -11,6 +12,13 @@
     <file>theme-switcher.ui</file>
     <file>library.ui</file>
     <file>library-entry.ui</file>
-    
+    <file>info-window.ui</file>
+    <file>preferences-window.ui</file>
+
   </gresource>
+
+  <gresource prefix="/com/github/RozeFound/Suraimu/icons/scalable/actions">
+    <file preprocess="xml-stripblanks" alias="people-symbolic.svg">../../data/icons/hicolor/symbolic/people-symbolic.svg</file>
+  </gresource>
+
 </gresources>

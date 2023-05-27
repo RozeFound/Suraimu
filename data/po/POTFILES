@@ -4,5 +4,7 @@ suraimu.ui.theme-switcher.blp
 suraimu.ui.library.blp
 suraimu.ui.library-entry.blp
 suraimu.ui.window.blp
+suraimu.ui.info-window.blp
 suraimu.windows.main_window.py
 suraimu.views.library.py
+suraimu.windows.info_window.py

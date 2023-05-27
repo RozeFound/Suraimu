@@ -9,7 +9,9 @@ blueprints = custom_target('blueprints',
     'placeholder.blp',
     'theme-switcher.blp',
     'library.blp',
-    'library-entry.blp'
+    'library-entry.blp',
+    'info-window.blp',
+    'preferences-window.blp'
     ),
   output: '.',
   command: [find_program('blueprint-compiler'), 'batch-compile', '@OUTPUT@', '@CURRENT_SOURCE_DIR@', '@INPUT@'])

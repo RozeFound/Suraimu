@@ -55,6 +55,6 @@ class MainWindow(Adw.ApplicationWindow):
         self.stack.add_titled_with_icon(self.page_browse, 
             "page_browse", _("Browse"), "web-browser-symbolic")
         self.stack.add_titled_with_icon(self.page_workshop, 
-            "page_workshop", _("Workshop"), "com.valvesoftware.Steam")
+            "page_workshop", _("Workshop"), "people-symbolic")
         
 

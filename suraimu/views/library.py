@@ -25,7 +25,7 @@ class Library(Adw.Bin):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        self.steam = Steam()    
+        self.steam = Steam()
 
         match self.steam.get_status():
             case "STEAM NOT FOUND": self.placeholder.set_title(_("No Steam installations found."))

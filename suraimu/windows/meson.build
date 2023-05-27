@@ -3,7 +3,9 @@ windowsdir = join_paths(pkgdatadir, 'suraimu/windows')
 
 suraimu_sources = [
   '__init__.py',
-  'main_window.py',
+  'application.py',
+  'information.py',
+  'preferences.py'
 ]
 
 install_data(suraimu_sources, install_dir: windowsdir)
