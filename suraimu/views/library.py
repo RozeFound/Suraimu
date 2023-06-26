@@ -5,6 +5,7 @@ gi.require_version('Adw', '1')
 
 from gi.repository import Gtk, Adw, GObject
 from gettext import gettext as _
+from time import sleep
 
 from suraimu.widgets.library import LibraryEntry
 from suraimu.backend.steam import Steam
@@ -45,6 +46,13 @@ class Library(Adw.Bin):
         for item in items: 
             entry = LibraryEntry(item)
             self.flow.append(entry)
+
+        while True: # Checking if all entries are initialized
+            for child in self.flow:
+                entry = child.get_child()
+                if not entry.initialized: break
+            else: break
+            sleep(0.1)
 
         self.placeholder.set_visible(False)
         self.scroll.set_visible(True)

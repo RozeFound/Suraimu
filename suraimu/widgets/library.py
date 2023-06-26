@@ -26,6 +26,8 @@ class LibraryEntry(Gtk.Box):
     label: Gtk.Label = Gtk.Template.Child()
     info_button: Gtk.Button = Gtk.Template.Child()
 
+    initialized = False
+
     def __init__(self, wallpaper: WallpaperEntry, **kwargs) -> None:
         super().__init__(**kwargs)
 
@@ -47,6 +49,7 @@ class LibraryEntry(Gtk.Box):
             
         self.preview.set_visible(True)
         self.no_preview_label.set_visible(False)
+        self.initialized = True
 
     def on_motion_enter(self, *args) -> None:
         self.revealer.set_reveal_child(True)
