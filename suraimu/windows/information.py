@@ -24,10 +24,11 @@ class InfoWindow(Adw.Window):
     description_property_group: Adw.PreferencesGroup = Gtk.Template.Child()
     description_property: Adw.ActionRow = Gtk.Template.Child()
 
-    def __init__(self, image: Gtk.Image, info: WallpaperEntry) -> None:
+    def __init__(self, paintable: Gdk.Paintable, info: WallpaperEntry) -> None:
         super().__init__()
 
-        if image: self.preview.set_paintable(image.get_paintable())
+        if paintable: self.preview.set_paintable(paintable)
+        else: self.preview.set_visible(False)
         self.set_title(info.title)
         self.info = info
 

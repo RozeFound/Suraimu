@@ -2,10 +2,13 @@ import gi
 
 gi.require_version('Gtk', '4.0')
 
-from gi.repository import Gtk
+from gi.repository import Gtk, Gdk, GObject
+from pathlib import Path
+
 from suraimu import config
 from suraimu.backend.steam import WallpaperEntry
 from suraimu.windows.information import InfoWindow
+from suraimu.widgets.animation import Animation
 from suraimu.backend.utils import Async
 
 @Gtk.Template(resource_path=f"{config.RESOURCES}/library-entry.ui")
@@ -15,7 +18,10 @@ class LibraryEntry(Gtk.Box):
 
     overlay: Gtk.Overlay = Gtk.Template.Child()
     no_preview_label: Gtk.Label = Gtk.Template.Child()
+
     preview: Gtk.Picture = Gtk.Template.Child()
+    paintable = GObject.Property(type=Gdk.Paintable)
+
     revealer: Gtk.Revealer = Gtk.Template.Child()
     label: Gtk.Label = Gtk.Template.Child()
     info_button: Gtk.Button = Gtk.Template.Child()
@@ -25,20 +31,20 @@ class LibraryEntry(Gtk.Box):
 
         self.wallpaper = wallpaper
         self.label.set_text(wallpaper.title)
-        self.image: Gtk.Image | None = None
 
-        if wallpaper.preview: self.load_preview(wallpaper.preview.as_posix())
+        if wallpaper.preview: self.load_preview(wallpaper.preview)
 
         motion_controller = Gtk.EventControllerMotion.new()
         motion_controller.connect("enter", self.on_motion_enter)
         motion_controller.connect("leave", self.on_motion_leave)
         self.overlay.add_controller(motion_controller)
-
+        
     @Async.function
-    def load_preview(self, preview_path: str) -> None:
-        # Gtk.Picture.set_pixbuf deprecated in GTK 4.12
-        self.image = Gtk.Image.new_from_file(preview_path)
-        self.preview.set_paintable(self.image.get_paintable())
+    def load_preview(self, preview_path: Path) -> None:  
+
+        if (preview_path.suffix == ".gif"): self.paintable = Animation(preview_path)
+        else: self.paintable = Gdk.Texture.new_from_filename(preview_path.as_posix())
+            
         self.preview.set_visible(True)
         self.no_preview_label.set_visible(False)
 
@@ -51,6 +57,6 @@ class LibraryEntry(Gtk.Box):
     @Gtk.Template.Callback()
     def on_info_button_clicked(self, *args) -> None:
 
-        info_window = InfoWindow(self.image, self.wallpaper)
+        info_window = InfoWindow(self.paintable, self.wallpaper)
         info_window.set_transient_for()
         info_window.present()

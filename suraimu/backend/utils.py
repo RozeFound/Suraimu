@@ -1,6 +1,9 @@
+from functools import wraps
 from threading import Thread
 from typing import Callable
 import traceback
+
+from gi.repository import GLib
 
 class Async(Thread):
 
@@ -23,3 +26,9 @@ class Async(Thread):
             Async(func, None, *args, **kwargs)
         return inner
 
+def glib_idle(func: Callable) -> Callable:
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        if kwargs: args += tuple([value for _, value in kwargs])
+        GLib.idle_add(func, *args)
+    return wrapper

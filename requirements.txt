@@ -1,2 +1,4 @@
 debugpy
+imageio
+av
 vdf

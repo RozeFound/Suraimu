@@ -6,6 +6,8 @@
 	<id>com.github.RozeFound.Suraimu</id>
 	<launchable type="desktop-id">com.github.RozeFound.Suraimu.desktop</launchable>
 
+	<summary>GUI for Kabegami</summary>
+
 	<description>
 	  <p>No description</p>
 	</description>

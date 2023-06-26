@@ -4,7 +4,8 @@ widgetsdir = join_paths(pkgdatadir, 'suraimu/widgets')
 suraimu_sources = [
   '__init__.py',
   'theme_switcher.py',
-  'library.py'
+  'library.py',
+  'animation.py'
 ]
 
 install_data(suraimu_sources, install_dir: widgetsdir)
