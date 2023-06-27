@@ -47,13 +47,6 @@ class Library(Adw.Bin):
             entry = LibraryEntry(item)
             self.flow.append(entry)
 
-        while True: # Checking if all entries are initialized
-            for child in self.flow:
-                entry = child.get_child()
-                if not entry.initialized: break
-            else: break
-            sleep(0.1)
-
         self.placeholder.set_visible(False)
         self.scroll.set_visible(True)
 
