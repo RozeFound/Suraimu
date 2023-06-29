@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Any
 from vdf import loads as parse_vdf
 from json import loads as parse_json
 from dataclasses import dataclass
@@ -15,8 +16,25 @@ class WallpaperEntry:
     description: str | None
 
     preview: Path | None
+    has_properties: bool 
     tags: list[str] | None
     path: Path
+
+@dataclass
+class Property:
+
+    title: str
+    order: int
+
+    condition: str | None
+    options: dict | None
+
+    min: int
+    max: int
+    step: int
+
+    type: str
+    value: Any
 
 class Steam:
 
@@ -102,6 +120,39 @@ class Steam:
             rating=json.get("contentrating", "Everyone"),
             description=json.get("description"),
             preview=preview if preview.exists() else None,
+            has_properties=True if json.get("general", {}).get("properties") else False,
             tags=json.get("tags"),
             path=path
         )
+
+    @staticmethod
+    def get_properties_for_wallpaper(wallpaper: WallpaperEntry) -> list[Property]:
+
+        project = wallpaper.path / "project.json"
+        json = parse_json(project.read_text())
+        properties: list[Property] = list()
+
+        for property in json.get("general", {}).get("properties", {}).values():
+
+            title = property.get("name", property.get("text"))
+
+            if(options := property.get("options")):
+                options = { option.get("label"): option.get("value") for option in options }
+
+            properties.append(Property(
+                title=title,
+
+                order=property.get("order"),
+                condition=property.get("condition"),
+                options=options,
+
+                min=property.get("min"),
+                max=property.get("max"),
+                step=property.get("step", 1),
+                
+                type=property.get("type"),
+                value=property.get("value")
+            ))
+
+        properties.sort(key=lambda x: x.order)
+        return properties
