@@ -1,9 +1,7 @@
-import gi
-
-gi.require_version('Gtk', '4.0')
-gi.require_version('Adw', '1')
-
+from gi import require_versions as gi_required
+gi_required({"Gtk": "4.0", "Adw": "1"})
 from gi.repository import Gtk, Adw, Gio
+
 from gettext import gettext as _
 
 from suraimu import config

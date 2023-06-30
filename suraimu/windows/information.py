@@ -1,52 +1,12 @@
-import gi, re
-
-gi.require_version('Gtk', '4.0')
-gi.require_version('Adw', '1')
-
+from gi import require_versions as gi_required
+gi_required({"Gtk": "4.0", "Adw": "1"})
 from gi.repository import Gtk, Adw, Gdk
+
 from gettext import gettext as _
 
 from suraimu import config
-from suraimu.backend.steam import WallpaperEntry, Steam, Property
-
-HTML_REGEX = re.compile('<.*?>')
-
-def get_property_row(property: Property) -> Adw.ActionRow | Adw.ComboRow | Adw.EntryRow:
-
-    if property.title != "ui_browse_properties_scheme_color": 
-        title = re.sub(HTML_REGEX, '', property.title) 
-    else: title = _("Scheme Color") 
-
-    row = Adw.ActionRow(title=title, use_markup=True)
-
-    match property.type:
-        case "bool": 
-            switch = Gtk.Switch(active=property.value, valign=Gtk.Align.CENTER)
-            row.set_activatable_widget(switch)
-            row.add_suffix(switch)
-        case "color": 
-            dialog = Gtk.ColorDialog(title=_("Choose color"), with_alpha=False)
-            values = [float(x) for x in property.value.split(" ")]
-            rgba = Gdk.RGBA(); rgba.alpha = 1.0
-            rgba.red, rgba.green, rgba.blue = values            
-            button = Gtk.ColorDialogButton(rgba=rgba, dialog=dialog, valign=Gtk.Align.CENTER)
-            row.set_activatable_widget(button)
-            row.add_suffix(button)
-        case "slider":
-            slider = Gtk.Scale(orientation=Gtk.Orientation.HORIZONTAL,
-                               adjustment=Gtk.Adjustment(value=float(property.value),
-                               lower=property.min, upper=property.max, step_increment=property.step),
-                               hexpand=True, valign=True, draw_value=True, value_pos=Gtk.PositionType.LEFT)
-            row.set_activatable_widget(slider)
-            row.add_suffix(slider)
-        case "combo":
-            row = Adw.ComboRow(title=title, use_markup=True)
-            string = list(property.options.keys())
-            string_list = Gtk.StringList(strings=string)
-            row.set_model(string_list)
-        case "textinput": row = Adw.EntryRow(title=title, text=property.value, use_markup=True)
-
-    return row
+from suraimu.backend.steam import WallpaperEntry, Steam
+from suraimu.windows.properties import PropertiesWindow
 
 @Gtk.Template(resource_path=f"{config.RESOURCES}/info-window.ui")
 class InfoWindow(Adw.Window):
@@ -96,17 +56,11 @@ class InfoWindow(Adw.Window):
     @Gtk.Template.Callback()
     def on_preferences_button_clicked(self, *args) -> None:
 
-        window = Adw.PreferencesWindow(title=_("Wallpaper Properties"))
-        page = Adw.PreferencesPage(); window.add(page)
-        group = Adw.PreferencesGroup(); page.add(group)
+        if not hasattr(self, "properties_window"):
+            self.properties_window = PropertiesWindow(self.info)
 
-        properties = Steam.get_properties_for_wallpaper(self.info)
-
-        for property in properties:
-            group.add(get_property_row(property))
-
-        window.set_transient_for(self)
-        window.present()
+        self.properties_window.set_transient_for(self)
+        self.properties_window.present()
 
     @Gtk.Template.Callback()
     def on_folder_button_clicked(self, *args) -> None:

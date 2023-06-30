@@ -5,7 +5,8 @@ suraimu_sources = [
   '__init__.py',
   'application.py',
   'information.py',
-  'preferences.py'
+  'preferences.py',
+  'properties.py'
 ]
 
 install_data(suraimu_sources, install_dir: windowsdir)

@@ -1,8 +1,7 @@
-import gi
-
-gi.require_version('Gtk', '4.0')
-
+from gi import require_versions as gi_required
+gi_required({"Gtk": "4.0"})
 from gi.repository import Gtk, Gdk, GObject
+
 from pathlib import Path
 
 from suraimu import config
@@ -55,6 +54,7 @@ class LibraryEntry(Gtk.Box):
     @Gtk.Template.Callback()
     def on_info_button_clicked(self, *args) -> None:
 
-        info_window = InfoWindow(self.paintable, self.wallpaper)
-        info_window.set_transient_for()
-        info_window.present()
+        if not hasattr(self, "info_window"):
+            self.info_window = InfoWindow(self.paintable, self.wallpaper)
+        self.info_window.set_transient_for()
+        self.info_window.present()

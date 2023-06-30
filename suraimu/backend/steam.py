@@ -2,12 +2,14 @@ from pathlib import Path
 from typing import Any
 from vdf import loads as parse_vdf
 from json import loads as parse_json
+from json import dumps as write_json
 from dataclasses import dataclass
+import os
 
 @dataclass
 class WallpaperEntry:
 
-    id: int
+    id: str
     type: str
     official: bool
 
@@ -23,6 +25,7 @@ class WallpaperEntry:
 @dataclass
 class Property:
 
+    id: str
     title: str
     order: int
 
@@ -34,6 +37,7 @@ class Property:
     step: int
 
     type: str
+    default: Any
     value: Any
 
 class Steam:
@@ -113,7 +117,7 @@ class Steam:
         preview = path / json.get("preview", "unknown")
 
         return WallpaperEntry(
-            id=json.get("workshopid", 0),
+            id=str(id),
             official=json.get("official", False),
             type=json.get("type"),
             title=json.get("title", "unknown"),
@@ -125,34 +129,70 @@ class Steam:
             path=path
         )
 
+class Properties:
+
+    xdg_data_home = os.environ.get("XDG_DATA_HOME", os.path.join(Path.home(), ".local/share"))
+    properties_dir = Path(xdg_data_home) / "suraimu" / "changed_properties"
+
     @staticmethod
-    def get_properties_for_wallpaper(wallpaper: WallpaperEntry) -> list[Property]:
+    def get(wallpaper: WallpaperEntry) -> dict[str, Property]:
 
         project = wallpaper.path / "project.json"
         json = parse_json(project.read_text())
-        properties: list[Property] = list()
+        properties: dict[str, Property] = dict()
 
-        for property in json.get("general", {}).get("properties", {}).values():
+        changed_properties = Properties.properties_dir / f"{wallpaper.id}.json"
+        if changed_properties.exists(): 
+            changed_properties_json = parse_json(changed_properties.read_text())
+        else: changed_properties_json = {}
 
-            title = property.get("name", property.get("text"))
+        for key, value in json.get("general", {}).get("properties", {}).items():
 
-            if(options := property.get("options")):
+            title = value.get("name", value.get("text"))
+
+            if(options := value.get("options")):
                 options = { option.get("label"): option.get("value") for option in options }
 
-            properties.append(Property(
+            default = value.get("value")
+
+            properties[key] = Property(
+                id=key,
                 title=title,
 
-                order=property.get("order"),
-                condition=property.get("condition"),
+                order=value.get("order"),
+                condition=value.get("condition"),
                 options=options,
 
-                min=property.get("min"),
-                max=property.get("max"),
-                step=property.get("step", 1),
+                min=value.get("min"),
+                max=value.get("max"),
+                step=value.get("step", 1),
                 
-                type=property.get("type"),
-                value=property.get("value")
-            ))
+                type=value.get("type"),
 
-        properties.sort(key=lambda x: x.order)
+                default=default,
+                value=changed_properties_json.get(key, default)
+            )
+
         return properties
+
+    @staticmethod
+    def set(wallpaper: WallpaperEntry, property: Property) -> None:
+
+        properties = Properties.properties_dir / f"{wallpaper.id}.json"
+        if not properties.parent.exists(): properties.parent.mkdir(parents=True)
+        
+        if properties.exists(): 
+            json = parse_json(properties.read_text())
+        else: json = {}
+
+        if property.value == property.default:
+            if property.id in json: del json[property.id]
+        else: json[property.id] = property.value
+
+        if not json:
+            if properties.exists():
+                properties.unlink()
+            return
+
+        properties.write_text(write_json(json, indent=4))
+    

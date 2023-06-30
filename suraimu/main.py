@@ -1,10 +1,9 @@
-import gi
+from gi import require_versions as gi_required
+gi_required({"Gtk": "4.0", "Adw": "1"})
+from gi.repository import Gtk, Adw, Gio
+
 from typing import Callable
 
-gi.require_version('Gtk', '4.0')
-gi.require_version('Adw', '1')
-
-from gi.repository import Gtk, Adw, Gio
 from suraimu.windows.application import MainWindow
 from suraimu.windows.preferences import PreferencesWindow
 from suraimu import config
