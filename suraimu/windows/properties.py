@@ -16,46 +16,50 @@ class PropertiesWindow(Adw.PreferencesWindow):
 
         self.page = Adw.PreferencesPage(); self.add(self.page)
         self.group = Adw.PreferencesGroup(); self.page.add(self.group)
-        self.items: list[tuple[Property, Adw.ActionRow]] = list() 
+        self.conditions: list[tuple[str, Adw.ActionRow | Adw.ComboRow | Adw.EntryRow]] = list() 
 
         self.info = info
         self.html_tag_regex = re_compile('<.*?>')
         self.condition_regex = re_compile(r"(?P<key>\w+?)\.\w+?\b")
 
         self.properties = Properties.get(info)
-    
+
+        self.fill_properties_and_conditions()
+        self.change_visibility_if_necessary()
+
+    def fill_properties_and_conditions(self) -> None:
+
         for property in sorted(self.properties.values(), key=lambda x: x.order):
 
             title = self.html_tag_regex.sub('', property.title) 
 
-            if property.condition:
-
-                match = self.condition_regex.findall(property.condition)
-
-                for key in match: property.condition = property.condition.replace(key, f"self.properties['{key}']")
-
-                property.condition = property.condition.replace("&&", "and").replace("||", "or")
-                property.condition = property.condition.replace("false", "False").replace("true", "True")
-
             match property.type:
-                case "bool": self.add_bool_property(title, property)
-                case "color": self.add_color_property(title, property)
-                case "slider": self.add_slider_property(title, property)
-                case "combo": self.add_combo_property(title, property)
-                case "textinput": self.add_textinput_property(title, property)
+                case "bool": get_property_row = self.add_bool_property
+                case "color": get_property_row = self.add_color_property
+                case "slider": get_property_row = self.add_slider_property
+                case "combo": get_property_row = self.add_combo_property
+                case "textinput": get_property_row = self.add_textinput_property
 
-        self.change_visibility_if_necessary()
+            row = get_property_row(title, property)
+            self.group.add(row)
+
+            if condition := property.condition:
+
+                match = self.condition_regex.findall(condition)
+                for key in match: condition = condition.replace(key, f"self.properties['{key}']")
+
+                condition = condition.replace("&&", "and").replace("||", "or")
+                condition = condition.replace("false", "False").replace("true", "True")
+
+                self.conditions.append((condition, row))
 
     def change_visibility_if_necessary(self) -> None:
-        for property, row in self.items: 
-            if  property.condition:
-                row.set_visible(eval(property.condition))
+        for condition, row in self.conditions: 
+            if condition: row.set_visible(eval(condition))
 
     def on_value_changed(self, widget: Gtk.Widget, *args) -> None:
 
         property = [x for x in args if isinstance(x, Property)][0]
-
-        value = None
 
         if isinstance(widget, Gtk.Switch):
             property.value = widget.get_active()
@@ -75,7 +79,7 @@ class PropertiesWindow(Adw.PreferencesWindow):
 
         Properties.set(self.info, property)
 
-    def add_bool_property(self, title: str, property: Property):
+    def add_bool_property(self, title: str, property: Property) -> Adw.ActionRow:
 
         switch = Gtk.Switch(active=property.value, valign=Gtk.Align.CENTER)
         switch.connect("state-set", self.on_value_changed, property)
@@ -83,9 +87,9 @@ class PropertiesWindow(Adw.PreferencesWindow):
         row = Adw.ActionRow(title=title, activatable_widget=switch)
         row.add_suffix(switch)
 
-        self.group.add(row); self.items.append((property, row))
+        return row
 
-    def add_color_property(self, title: str, property: Property):
+    def add_color_property(self, title: str, property: Property) -> Adw.ActionRow:
 
         if property.title == "ui_browse_properties_scheme_color": title = _("Scheme Color") 
         dialog = Gtk.ColorDialog(title=_("Choose color"), with_alpha=False)
@@ -96,35 +100,38 @@ class PropertiesWindow(Adw.PreferencesWindow):
 
         button = Gtk.ColorDialogButton(rgba=rgba, dialog=dialog, valign=Gtk.Align.CENTER)
         button.connect("notify::rgba", self.on_value_changed, property)
+
         row = Adw.ActionRow(title=title, activatable_widget=button)
         row.add_suffix(button)
 
-        self.group.add(row); self.items.append((property, row))
+        return row
 
-    def add_slider_property(self, title: str, property: Property):
+    def add_slider_property(self, title: str, property: Property) -> Adw.ActionRow:
 
         slider = Gtk.Scale(orientation=Gtk.Orientation.HORIZONTAL,
                            adjustment=Gtk.Adjustment(value=float(property.value),
                            lower=property.min, upper=property.max, step_increment=property.step),
                            hexpand=True, valign=True, draw_value=True, value_pos=Gtk.PositionType.LEFT)
         slider.connect("value-changed", self.on_value_changed, property)
+
         row = Adw.ActionRow(title=title, activatable_widget=slider)
         row.add_suffix(slider)
 
-        self.group.add(row); self.items.append((property, row))
+        return row
 
-    def add_combo_property(self, title: str, property: Property):
+    def add_combo_property(self, title: str, property: Property) -> Adw.ComboRow:
 
         strings = list(property.options.keys())
         string_list = Gtk.StringList(strings=strings)
+
         row = Adw.ComboRow(title=title, model=string_list)
         row.connect("notify::selected", self.on_value_changed, property)
 
-        self.group.add(row); self.items.append((property, row))
+        return row
 
-    def add_textinput_property(self, title: str, property: Property):
+    def add_textinput_property(self, title: str, property: Property) -> Adw.EntryRow:
 
         row = Adw.EntryRow(title=title, text=property.value)
         row.connect("changed", self.on_value_changed, property)
 
-        self.group.add(row); self.items.append((property, row))
+        return row
