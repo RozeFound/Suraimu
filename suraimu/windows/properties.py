@@ -4,7 +4,8 @@ from gi.repository import Gtk, Adw, Gdk
 
 from gettext import gettext as _
 from re import compile as re_compile
-from suraimu.backend.steam import Properties, WallpaperEntry, Property
+from locale import getlocale
+from suraimu.backend.steam import Properties, WallpaperEntry, Property, Steam
 
 class PropertiesWindow(Adw.PreferencesWindow):
 
@@ -23,15 +24,17 @@ class PropertiesWindow(Adw.PreferencesWindow):
         self.condition_regex = re_compile(r"(?P<key>\w+?)\.\w+?\b")
 
         self.properties = Properties.get(info)
+        locale_code = getlocale()[0].lower().replace('_', '-')
+        self.locale = Steam.get_locale(locale_code)
 
         self.fill_properties_and_conditions()
         self.change_visibility_if_necessary()
 
     def fill_properties_and_conditions(self) -> None:
 
-        for property in sorted(self.properties.values(), key=lambda x: x.order):
+        for property in sorted(self.properties.values(), key=lambda x: x.index):
 
-            title = self.html_tag_regex.sub('', property.title) 
+            title = self.locale.get(property.title, self.html_tag_regex.sub('', property.title))
 
             match property.type:
                 case "bool": get_property_row = self.add_bool_property
@@ -91,7 +94,6 @@ class PropertiesWindow(Adw.PreferencesWindow):
 
     def add_color_property(self, title: str, property: Property) -> Adw.ActionRow:
 
-        if property.title == "ui_browse_properties_scheme_color": title = _("Scheme Color") 
         dialog = Gtk.ColorDialog(title=_("Choose color"), with_alpha=False)
 
         values = [float(x) for x in property.value.split(" ")]
@@ -121,10 +123,15 @@ class PropertiesWindow(Adw.PreferencesWindow):
 
     def add_combo_property(self, title: str, property: Property) -> Adw.ComboRow:
 
-        strings = list(property.options.keys())
+        strings = [self.locale.get(key, key) for key in property.options.keys()]
         string_list = Gtk.StringList(strings=strings)
 
-        row = Adw.ComboRow(title=title, model=string_list)
+        selected = 0
+        
+        for i, value in enumerate(property.options.values()):
+            if property.value == value: selected = i
+
+        row = Adw.ComboRow(title=title, model=string_list, selected=selected)
         row.connect("notify::selected", self.on_value_changed, property)
 
         return row

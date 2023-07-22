@@ -18,7 +18,6 @@ class WallpaperEntry:
     description: str | None
 
     preview: Path | None
-    has_properties: bool 
     tags: list[str] | None
     path: Path
 
@@ -27,7 +26,7 @@ class Property:
 
     id: str
     title: str
-    order: int
+    index: int
 
     condition: str | None
     options: dict | None
@@ -94,6 +93,19 @@ class Steam:
         path = self.library_path / "steamapps/common/wallpaper_engine/projects/defaultprojects"
         if path.exists(): return path
 
+    @staticmethod
+    def get_locale(locale: str) -> dict:
+
+        instance = Steam()
+        locale_dir = instance.library_path / "steamapps/common/wallpaper_engine/locale"
+
+        file = locale_dir / f"ui_{locale}.json"
+        if file.exists(): 
+            data = file.read_text()
+            return parse_json(data)
+        else: 
+            return instance.get_locale("en-us")
+
     def list_workshop_items(self) -> list[int]:
         return [int(id.name) for id in self.workshop_path.iterdir()]
 
@@ -116,6 +128,9 @@ class Steam:
         json = parse_json(project.read_text())
         preview = path / json.get("preview", "unknown")
 
+        if category := json.get("category"):
+            if category == "Asset": return
+
         return WallpaperEntry(
             id=str(id),
             official=json.get("official", False),
@@ -124,7 +139,6 @@ class Steam:
             rating=json.get("contentrating", "Everyone"),
             description=json.get("description"),
             preview=preview if preview.exists() else None,
-            has_properties=True if json.get("general", {}).get("properties") else False,
             tags=json.get("tags"),
             path=path
         )
@@ -159,7 +173,7 @@ class Properties:
                 id=key,
                 title=title,
 
-                order=value.get("order"),
+                index=value.get("index", value.get("order", 0)),
                 condition=value.get("condition"),
                 options=options,
 

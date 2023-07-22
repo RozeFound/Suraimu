@@ -5,7 +5,7 @@ from gi.repository import Gtk, Adw, Gdk
 from gettext import gettext as _
 
 from suraimu import config
-from suraimu.backend.steam import WallpaperEntry, Steam
+from suraimu.backend.steam import WallpaperEntry
 from suraimu.windows.properties import PropertiesWindow
 
 @Gtk.Template(resource_path=f"{config.RESOURCES}/info-window.ui")
@@ -31,8 +31,6 @@ class InfoWindow(Adw.Window):
         else: self.preview.set_visible(False)
         self.set_title(info.title)
         self.info = info
-
-        if not info.has_properties: self.preferences_button.set_visible(False)
 
         if info.id: self.id_property.set_subtitle(str(info.id))
         elif info.official: 

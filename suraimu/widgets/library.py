@@ -29,6 +29,7 @@ class LibraryEntry(Gtk.Box):
 
         self.wallpaper = wallpaper
         self.label.set_text(wallpaper.title)
+        self.label.set_tooltip_text(wallpaper.title)
 
         if wallpaper.preview: self.load_preview(wallpaper.preview)
 
