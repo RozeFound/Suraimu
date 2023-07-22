@@ -1,59 +1,76 @@
 from gi.repository import GObject, Gdk, Gtk, GLib, GdkPixbuf, Graphene
 
 import imageio.v3 as iio
+from numpy import ndarray
 from pathlib import Path
+
+def create_texture(image: ndarray) -> Gdk.Texture:
+        
+    pixbuf = GdkPixbuf.Pixbuf.new_from_data(
+        image.tobytes(), 
+        GdkPixbuf.Colorspace.RGB,
+        False,
+        8,
+        image.shape[1],
+        image.shape[0],
+        image.shape[1] * image.shape[2]
+    )
+
+    return Gdk.Texture.new_for_pixbuf(pixbuf)
 
 class Animation(GObject.GObject, Gdk.Paintable):
 
     __gtype_name__ = "GifAnimation"
 
-    paintable: Gdk.Paintable = None
-
-    def __init__(self, path: Path) -> None:
+    def __init__(self, path: Path, autoplay = True) -> None:
 
         super().__init__()
 
         props = iio.improps(path, plugin="pyav")
         self.height, self.width = props.shape[1], props.shape[2]
+        self.n_images = props.n_images
 
         meta = iio.immeta(path, plugin="pyav")
-        self.delay = 1000 // meta.get("fps")
+        self.interval = 1000 // meta.get("fps")
 
         self.frames = [frame for frame in iio.imiter(path, plugin="pyav")]
+        self.textures = []
 
+        self.playing = False
         self.current_frame = 0
-
-        GLib.timeout_add(self.delay, self.play_next_frame) # add this line to start the animation loop
+        if autoplay: self.play()
 
     def do_get_intrinsic_width(self) -> int: return self.width
     def do_get_intrinsic_height(self) -> int: return self.height
-    def do_get_current_image(self) -> Gdk.Paintable: return self.paintable
+    def do_get_intrinsic_aspect_ratio(self) -> float: return self.width / self.height
+    def do_get_flags(self) -> Gdk.PaintableFlags: return Gdk.PaintableFlags(Gdk.PaintableFlags.SIZE)
+
+    def do_get_current_image(self) -> Gdk.Paintable: 
+
+        if len(self.textures) < self.current_frame + 1:
+            texture = create_texture(self.frames[0])
+            self.textures.append(texture); self.frames.pop(0)
+        else: texture = self.textures[self.current_frame] 
+
+        return texture
 
     def do_snapshot(self, snapshot: Gtk.Snapshot, width: float, height: float) -> None:
 
-        frame = self.frames[self.current_frame]
-
-        pixbuf = GdkPixbuf.Pixbuf.new_from_data(
-            frame.tobytes(), 
-            GdkPixbuf.Colorspace.RGB,
-            False,
-            8,
-            frame.shape[1],
-            frame.shape[0],
-            frame.shape[1] * frame.shape[2]
-        )
-        pixbuf = pixbuf.scale_simple(width, height, GdkPixbuf.InterpType.BILINEAR)
-        texture = Gdk.Texture.new_for_pixbuf(pixbuf)
+        texture = self.get_current_image()
 
         rect = Graphene.Rect()
         rect = rect.init(0, 0, width, height)
         snapshot.append_texture(texture, rect)
 
-        self.paintable = texture
+    def invalidate_contents(self) -> bool:
 
-    def play_next_frame(self) -> bool:
+        super().invalidate_contents()
+        self.current_frame = (self.current_frame + 1) % self.n_images
+        return GLib.SOURCE_CONTINUE if self.playing else GLib.SOURCE_REMOVE
+        
+    def play(self) -> None:
+        self.playing = True
+        GLib.timeout_add(self.interval, self.invalidate_contents)
 
-        self.current_frame = (self.current_frame + 1) % len(self.frames)
-        self.invalidate_contents()
-
-        return GLib.SOURCE_CONTINUE # return True to continue the loop
+    def pause(self) -> None:
+        self.playing = False
