@@ -33,8 +33,8 @@ class Animation(GObject.GObject, Gdk.Paintable):
         meta = iio.immeta(path, plugin="pyav")
         self.interval = 1000 // meta.get("fps")
 
-        self.frames = [frame for frame in iio.imiter(path, plugin="pyav")]
-        self.textures = []
+        self.iter = iio.imiter(path, plugin="pyav")
+        self.textures = [create_texture(next(self.iter))]
 
         self.playing = False
         self.current_frame = 0
@@ -47,10 +47,11 @@ class Animation(GObject.GObject, Gdk.Paintable):
 
     def do_get_current_image(self) -> Gdk.Paintable: 
 
-        if len(self.textures) < self.current_frame + 1:
-            texture = create_texture(self.frames[0])
-            self.textures.append(texture); self.frames.pop(0)
-        else: texture = self.textures[self.current_frame] 
+        if len(self.textures) <= self.current_frame:
+            image = next(self.iter)
+            texture = create_texture(image)
+            self.textures.append(texture)
+        else: texture = self.textures[self.current_frame]
 
         return texture
 

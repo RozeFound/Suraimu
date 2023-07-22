@@ -19,6 +19,11 @@
 			<summary>Main Window Height</summary>
 		</key>
 
+		<key type="b" name="animations">
+			<default>true</default>
+			<summary>Enable animations</summary>
+		</key>
+
 	</schema>
 
 </schemalist>

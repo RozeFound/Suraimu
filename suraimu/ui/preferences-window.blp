@@ -3,6 +3,28 @@ using Adw 1;
 
 template $PreferencesWindow : Adw.PreferencesWindow {
 
+    Adw.PreferencesPage {
 
+        title: _("GUI");
+
+        Adw.PreferencesGroup {
+
+            title: _("Performance");
+
+            Adw.ActionRow {
+
+                title: _("GIF Animations");
+
+                [suffix] Gtk.Switch animations_switch {
+
+                    valign: center;
+
+                }
+
+            }
+
+        }
+
+    }
 
 }

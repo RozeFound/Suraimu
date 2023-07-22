@@ -54,6 +54,6 @@ class Library(Adw.Bin):
 
         threads = [Async(self.add_entry, None, item) for item in items]
         while any(thread.is_alive() for thread in threads): sleep(.1)
-            
+        
         self.placeholder.set_visible(False)
         self.scroll.set_visible(True)

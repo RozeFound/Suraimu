@@ -5,6 +5,7 @@ suraimu.ui.library.blp
 suraimu.ui.library-entry.blp
 suraimu.ui.window.blp
 suraimu.ui.info-window.blp
+suraimu.ui.preferences-window.blp
 suraimu.windows.application.py
 suraimu.views.library.py
 suraimu.windows.information.py

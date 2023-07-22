@@ -32,11 +32,12 @@ class InfoWindow(Adw.Window):
         self.set_title(info.title)
         self.info = info
 
-        if info.id: self.id_property.set_subtitle(str(info.id))
-        elif info.official: 
-            self.id_property.remove_css_class("property")
-            self.id_property.set_title(_("Bundled with Wallpaper Engine"))
+        if info.id: self.id_property.set_subtitle(info.id)
         else: self.id_property.set_visible(False)
+
+        if info.official: 
+            tooltip = _("Bundled with Wallpaper Engine")
+            self.id_property.set_tooltip_text(tooltip)
 
         if info.type: self.type_property.set_subtitle(info.type.capitalize())
         else: self.type_property.set_visible(False)

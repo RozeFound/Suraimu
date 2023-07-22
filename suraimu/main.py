@@ -33,8 +33,6 @@ class Suraimu(Adw.Application):
         preferences.set_transient_for(self.window)
         preferences.present()
 
-        print("app.preferences callback activated")
-
     def show_about(self, *args) -> None:
         
         builder = Gtk.Builder.new_from_resource(f"{config.RESOURCES}/about.ui")
