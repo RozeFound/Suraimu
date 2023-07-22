@@ -42,18 +42,15 @@ class Library(Adw.Bin):
         right = child_two.get_child().wallpaper.title
         return -1 if sorted([left, right])[0] == left else 1
 
-    def add_entry(self, item) -> None:
-        entry = LibraryEntry(item)
-        self.flow.append(entry)
-
     @Async.function
     def fill_library(self) -> None: 
 
         items = self.steam.get_wallpapers()
         self.items_per_line = len(items)
 
-        threads = [Async(self.add_entry, None, item) for item in items]
-        while any(thread.is_alive() for thread in threads): sleep(.1)
+        for item in items: 
+            entry = LibraryEntry(item)
+            self.flow.append(entry)
         
         self.placeholder.set_visible(False)
         self.scroll.set_visible(True)
