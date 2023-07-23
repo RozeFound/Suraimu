@@ -69,6 +69,7 @@ class PropertiesWindow(Adw.PreferencesWindow):
             self.change_visibility_if_necessary()
         if isinstance(widget, Gtk.Scale):
             property.value = widget.get_value()
+            self.change_visibility_if_necessary()
         if isinstance(widget, Gtk.ColorDialogButton):
             rgba = widget.get_rgba()
             rgb = [rgba.red, rgba.green, rgba.blue]
@@ -111,9 +112,10 @@ class PropertiesWindow(Adw.PreferencesWindow):
     def add_slider_property(self, title: str, property: Property) -> Adw.ActionRow:
 
         slider = Gtk.Scale(orientation=Gtk.Orientation.HORIZONTAL,
-                           adjustment=Gtk.Adjustment(value=float(property.value),
+                           adjustment=Gtk.Adjustment(value=property.value,
                            lower=property.min, upper=property.max, step_increment=property.step),
-                           hexpand=True, valign=True, draw_value=True, value_pos=Gtk.PositionType.LEFT)
+                           digits=property.precision if property.fraction else 0,
+                           hexpand=True, valign=True, draw_value=True, value_pos=Gtk.PositionType.LEFT)                   
         slider.connect("value-changed", self.on_value_changed, property)
 
         row = Adw.ActionRow(title=title, activatable_widget=slider)

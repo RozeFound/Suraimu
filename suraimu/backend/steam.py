@@ -35,6 +35,9 @@ class Property:
     max: int
     step: int
 
+    fraction: bool
+    precision: int
+
     type: str
     default: Any
     value: Any
@@ -168,6 +171,9 @@ class Properties:
                 options = { option.get("label"): option.get("value") for option in options }
 
             default = value.get("value")
+            if value.get("type") == "slider" and isinstance(default, str): 
+                if default.isdigit(): default = int(default)
+                else: default = float(default)
 
             properties[key] = Property(
                 id=key,
@@ -180,6 +186,9 @@ class Properties:
                 min=value.get("min"),
                 max=value.get("max"),
                 step=value.get("step", 1),
+
+                fraction=value.get("fraction", False),
+                precision=value.get("precision", 1),
                 
                 type=value.get("type"),
 
