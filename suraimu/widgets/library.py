@@ -24,8 +24,6 @@ class LibraryEntry(Gtk.Box):
     label: Gtk.Label = Gtk.Template.Child()
     info_button: Gtk.Button = Gtk.Template.Child()
 
-    settings = Gio.Settings.new(config.APP_ID)
-
     def __init__(self, wallpaper: WallpaperEntry, **kwargs) -> None:
         super().__init__(**kwargs)
 
@@ -39,18 +37,10 @@ class LibraryEntry(Gtk.Box):
         motion_controller.connect("enter", self.on_motion_enter)
         motion_controller.connect("leave", self.on_motion_leave)
         self.overlay.add_controller(motion_controller)
-
-        self.settings.connect("changed::animations", self.toggle_animation)
-
-    def toggle_animation(self, *args) -> None:
-        animations = self.settings.get_boolean("animations")
-        if isinstance(self.paintable, Animation):
-            self.paintable.play() if animations else self.paintable.pause()
   
     def load_preview(self, preview_path: Path) -> None:  
 
-        autoplay = self.settings.get_boolean("animations")
-        if preview_path.suffix == ".gif": self.paintable = Animation(preview_path, autoplay)
+        if preview_path.suffix == ".gif": self.paintable = Animation(preview_path)
         else: self.paintable = Gdk.Texture.new_from_filename(preview_path.as_posix())
             
         self.preview.set_visible(True)

@@ -1,5 +1,6 @@
-from gi.repository import GObject, Gdk, Gtk, GLib, GdkPixbuf, Graphene
+from gi.repository import GObject, Gdk, Gtk, GLib, Gio, GdkPixbuf, Graphene
 
+from suraimu import config
 import imageio.v3 as iio
 from numpy import ndarray
 from pathlib import Path
@@ -22,9 +23,18 @@ class Animation(GObject.GObject, Gdk.Paintable):
 
     __gtype_name__ = "GifAnimation"
 
+    settings = Gio.Settings.new(config.APP_ID)
+
+    enabled = settings.get_boolean("animations")
+    preload = settings.get_boolean("animations-preload")
+
     def __init__(self, path: Path, autoplay = True) -> None:
 
         super().__init__()
+
+        self.settings.connect("changed::animations", lambda *args: (
+            enabled := self.settings.get_boolean("animations"),
+            self.play() if enabled else self.pause()))
 
         props = iio.improps(path, plugin="pyav")
         self.height, self.width = props.shape[1], props.shape[2]
@@ -34,11 +44,15 @@ class Animation(GObject.GObject, Gdk.Paintable):
         self.interval = 1000 // meta.get("fps")
 
         self.iter = iio.imiter(path, plugin="pyav")
-        self.textures = [create_texture(next(self.iter))]
+        self.textures: list[Gdk.Texture] = list()
+
+        if self.preload and self.enabled:
+            self.textures = [create_texture(image) for image in self.iter]
+        else: self.textures = [create_texture(next(self.iter))] # we preload the first frame anyway
 
         self.playing = False
         self.current_frame = 0
-        if autoplay: self.play()
+        if autoplay and self.enabled: self.play()
 
     def do_get_intrinsic_width(self) -> int: return self.width
     def do_get_intrinsic_height(self) -> int: return self.height

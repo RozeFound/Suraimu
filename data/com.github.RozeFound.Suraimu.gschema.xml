@@ -24,6 +24,11 @@
 			<summary>Enable animations</summary>
 		</key>
 
+		<key type="b" name="animations-preload">
+			<default>false</default>
+			<summary>Enable animations preloading</summary>
+		</key>
+
 	</schema>
 
 </schemalist>
