@@ -42,6 +42,7 @@ class PropertiesWindow(Adw.PreferencesWindow):
                 case "slider": get_property_row = self.add_slider_property
                 case "combo": get_property_row = self.add_combo_property
                 case "textinput": get_property_row = self.add_textinput_property
+                case _: get_property_row = self.add_unknown_property
 
             row = get_property_row(title, property)
             self.group.add(row)
@@ -49,10 +50,15 @@ class PropertiesWindow(Adw.PreferencesWindow):
             if condition := property.condition:
 
                 match = self.condition_regex.findall(condition)
-                for key in match: condition = condition.replace(key, f"self.properties['{key}']")
 
+                for key in set(match): 
+                    condition = condition.replace(key, f"self.properties['{key}']")
+
+                # filter out JS syntax
                 condition = condition.replace("&&", "and").replace("||", "or")
                 condition = condition.replace("false", "False").replace("true", "True")
+                condition = condition.replace("===", "==").replace("!==", "!=")
+                condition = condition.replace("endsWith", "endswith").replace("startsWith", "startswith")
 
                 self.conditions.append((condition, row))
 
@@ -83,6 +89,13 @@ class PropertiesWindow(Adw.PreferencesWindow):
 
         Properties.set(self.info, property)
 
+    def add_unknown_property(self, title: str, property: Property) -> Adw.ActionRow:
+
+        subtitle = f"Unknown property type: {property.type}"
+        row = Adw.ActionRow(title=title, subtitle=subtitle)
+
+        return row
+
     def add_bool_property(self, title: str, property: Property) -> Adw.ActionRow:
 
         switch = Gtk.Switch(active=property.value, valign=Gtk.Align.CENTER)
@@ -97,9 +110,12 @@ class PropertiesWindow(Adw.PreferencesWindow):
 
         dialog = Gtk.ColorDialog(title=_("Choose color"), with_alpha=False)
 
-        values = [float(x) for x in property.value.split(" ")]
-        rgba = Gdk.RGBA(); rgba.alpha = 1.0
-        rgba.red, rgba.green, rgba.blue = values  
+        rgba = Gdk.RGBA()
+
+        if '#' not in property.value:
+            values = [float(x) for x in property.value.split(" ")]
+            rgba.red, rgba.green, rgba.blue = values; rgba.alpha = 1.0
+        else: rgba.parse(property.value)
 
         button = Gtk.ColorDialogButton(rgba=rgba, dialog=dialog, valign=Gtk.Align.CENTER)
         button.connect("notify::rgba", self.on_value_changed, property)

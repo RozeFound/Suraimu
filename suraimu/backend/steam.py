@@ -137,7 +137,8 @@ class Steam:
         return WallpaperEntry(
             id=str(id),
             official=json.get("official", False),
-            type=json.get("type"),
+            # TODO: Implement Presets, for not it's just for identification
+            type=json.get("type", "Preset" if "preset" in json else None),
             title=json.get("title", "unknown"),
             rating=json.get("contentrating", "Everyone"),
             description=json.get("description"),

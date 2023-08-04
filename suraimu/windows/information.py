@@ -32,6 +32,8 @@ class InfoWindow(Adw.Window):
         self.set_title(info.title)
         self.info = info
 
+        if info.type == "Preset": self.preferences_button.set_visible(False)
+
         if info.id: self.id_property.set_subtitle(info.id)
         else: self.id_property.set_visible(False)
 
