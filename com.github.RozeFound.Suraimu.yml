@@ -1,7 +1,7 @@
 id: com.github.RozeFound.Suraimu
 sdk: org.gnome.Sdk
 runtime: org.gnome.Platform
-runtime-version: "44"
+runtime-version: "45"
 command: suraimu
 
 finish-args:
@@ -35,7 +35,7 @@ modules:
     sources:
       - type: git
         url: https://gitlab.gnome.org/jwestman/blueprint-compiler
-        tag: v0.8.1
+        tag: v0.10.0
 
   - name: suraimu
     builddir: true

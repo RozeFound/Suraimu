@@ -56,13 +56,3 @@ checkbutton.theme-selector radio:checked {
   margin: 3px;
   border-radius: 10px;
 }
-
-row.property label.title {
-  opacity: 0.55;
-  font-size: smaller;
-}
-
-row.property label.subtitle {
-  opacity: 1.0;
-  font-size: 11pt;
-}

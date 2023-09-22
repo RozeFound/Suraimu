@@ -3,8 +3,6 @@
   <gresource prefix="/com/github/RozeFound/Suraimu">
 
     <file>style.css</file>
-    <file>style-hc.css</file>
-    <file>style-dark.css</file>
     
     <file>about.ui</file>
     <file>window.ui</file>

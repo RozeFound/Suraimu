@@ -62,7 +62,8 @@ def main(version: str, argv: list[str]) -> int:
 
     if config.BUILD_TYPE == "dev":
         from debugpy import listen
-        listen(("localhost", 5678))
+        listen(("127.0.0.1", 5678))
+        print("Debugger checkpoint")
 
     app = Suraimu(version)
     return app.run(argv)
