@@ -6,12 +6,16 @@ template $ThemeSwitcher : Gtk.Box {
     styles ["theme-switcher"]
 
     hexpand: true;
+    orientation: horizontal;
     spacing: 12;
 
     Gtk.CheckButton system {
 
         visible: bind template.show-system;
         tooltip-text: _("Follow system style");
+
+        hexpand: true;
+        halign: center;
 
         toggled => $on_color_scheme_changed();
 
@@ -27,6 +31,9 @@ template $ThemeSwitcher : Gtk.Box {
         tooltip-text: _("Light style");
         group: system;
 
+        hexpand: true;
+        halign: center;
+
         toggled => $on_color_scheme_changed();
 
         styles [
@@ -40,6 +47,9 @@ template $ThemeSwitcher : Gtk.Box {
 
         tooltip-text: _("Dark style");
         group: system;
+
+        hexpand: true;
+        halign: center;
 
         toggled => $on_color_scheme_changed();
 

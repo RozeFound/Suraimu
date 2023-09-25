@@ -54,7 +54,6 @@ class Suraimu(Adw.Application):
         window.present()
 
     def exit(self, *args) -> None:
-        self.window.on_close_request()
         print("Closing Suraimu...")
         quit(0)
 

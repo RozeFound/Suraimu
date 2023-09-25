@@ -20,9 +20,10 @@ class MainWindow(Adw.ApplicationWindow):
     settings = Gio.Settings.new(config.APP_ID)
 
     def __init__(self, **kwargs):
-        super().__init__(**kwargs,
-        default_width=self.settings.get_int("width"),
-        default_height=self.settings.get_int("height"))
+        super().__init__(**kwargs)
+
+        self.settings.bind("width", self, "default_width", Gio.SettingsBindFlags.DEFAULT)
+        self.settings.bind("height", self, "default_height", Gio.SettingsBindFlags.DEFAULT)
 
         self.app = kwargs.get("application")
 
@@ -33,14 +34,6 @@ class MainWindow(Adw.ApplicationWindow):
         self.options_menu.add_child(self.theme_switcher, "theme")
 
         self.populate_stack()
-
-    @Gtk.Template.Callback()
-    def on_close_request(self, *args) -> None:
-
-        self.settings.set_int("width", self.get_width())
-        self.settings.set_int("height", self.get_height())
-
-        self.settings.set_int("theme", self.theme_switcher.theme)
 
     def populate_stack(self) -> None:
 
