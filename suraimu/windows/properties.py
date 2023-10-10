@@ -70,7 +70,7 @@ class PropertiesWindow(Adw.PreferencesWindow):
 
         property = [x for x in args if isinstance(x, Property)][0]
 
-        if isinstance(widget, Gtk.Switch):
+        if isinstance(widget, Adw.SwitchRow):
             property.value = widget.get_active()
             self.change_visibility_if_necessary()
         if isinstance(widget, Gtk.Scale):
@@ -96,13 +96,10 @@ class PropertiesWindow(Adw.PreferencesWindow):
 
         return row
 
-    def add_bool_property(self, title: str, property: Property) -> Adw.ActionRow:
+    def add_bool_property(self, title: str, property: Property) -> Adw.SwitchRow:
 
-        switch = Gtk.Switch(active=property.value, valign=Gtk.Align.CENTER)
-        switch.connect("state-set", self.on_value_changed, property)
-
-        row = Adw.ActionRow(title=title, activatable_widget=switch)
-        row.add_suffix(switch)
+        row = Adw.SwitchRow(title=title, active=property.value)
+        row.connect("notify::active", self.on_value_changed, property)
 
         return row
 

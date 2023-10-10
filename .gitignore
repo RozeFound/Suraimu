@@ -1,6 +1,8 @@
 .vscode
 
+.flatpak
 .flatpak-builder
 flatpak-pip-generator
 
 build
+_build

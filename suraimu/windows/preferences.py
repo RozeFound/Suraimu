@@ -12,7 +12,7 @@ class PreferencesWindow(Adw.PreferencesWindow):
     __gtype_name__ = "PreferencesWindow"
 
     animations_row: Adw.ExpanderRow = Gtk.Template.Child()
-    animations_preload_switch: Gtk.Switch = Gtk.Template.Child()
+    preload_animations_row: Adw.SwitchRow = Gtk.Template.Child()
 
     settings = Gio.Settings.new(config.APP_ID)
 
@@ -22,4 +22,4 @@ class PreferencesWindow(Adw.PreferencesWindow):
         self.app = kwargs.get("application")
 
         self.settings.bind("animations", self.animations_row, "enable-expansion", Gio.SettingsBindFlags.DEFAULT)
-        self.settings.bind("animations-preload", self.animations_preload_switch, "active", Gio.SettingsBindFlags.DEFAULT)
+        self.settings.bind("animations-preload", self.preload_animations_row, "active", Gio.SettingsBindFlags.DEFAULT)

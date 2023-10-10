@@ -16,16 +16,10 @@ template $PreferencesWindow : Adw.PreferencesWindow {
                 title: _("GIF Animations");
                 show-enable-switch: true;
 
-                Adw.ActionRow {
+                Adw.SwitchRow preload_animations_row {
 
                     title: _("Preload Animations");
-                    subtitle: _("Longer loading times, less runtime stutters");
-                    
-                    [suffix] Gtk.Switch animations_preload_switch {
-
-                        valign: center;
-                        
-                    }
+                    subtitle: _("Longer loading times, less runtime stutters"); 
 
                 }
 
