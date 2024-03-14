@@ -12,7 +12,7 @@ imageio==2.31.3
     # via -r requirements.in
 numpy==1.26.0
     # via imageio
-pillow==10.0.1
+pillow==10.2.0
     # via imageio
 vdf==3.4
     # via -r requirements.in
