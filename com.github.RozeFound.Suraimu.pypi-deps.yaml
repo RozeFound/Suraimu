@@ -24,8 +24,8 @@ sources:
   only-arches:
   - x86_64
 - type: file
-  url: https://files.pythonhosted.org/packages/3c/49/f87cecbdec4b00cc1187f01196d48c08828204cd861915fab44972dc705c/Pillow-10.0.1-cp311-cp311-manylinux_2_28_x86_64.whl
-  sha256: cbe68deb8580462ca0d9eb56a81912f59eb4542e1ef8f987405e35a0179f4ea2
+  url: https://files.pythonhosted.org/packages/66/9c/2e1877630eb298bbfd23f90deeec0a3f682a4163d5ca9f178937de57346c/pillow-10.2.0-cp311-cp311-manylinux_2_28_x86_64.whl
+  sha256: a086c2af425c5f62a65e12fbf385f7c9fcb8f107d0849dba5839461a129cf311
   only-arches:
   - x86_64
 - type: file

@@ -40,7 +40,12 @@ class Library(Adw.Bin):
     def sort_func(self, child_one, child_two):
         left = child_one.get_child().wallpaper.title
         right = child_two.get_child().wallpaper.title
-        return -1 if sorted([left, right])[0] == left else 1
+
+        for i in range(min(len(left), len(right))):
+            if ord(left[i]) > ord(right[i]): return 1
+            elif ord(left[i]) < ord(right[i]): return -1
+
+        return 0
 
     @Async.function
     def fill_library(self) -> None: 
@@ -48,9 +53,15 @@ class Library(Adw.Bin):
         items = self.steam.get_wallpapers()
         self.items_per_line = len(items)
 
-        for item in items: 
-            entry = LibraryEntry(item)
-            self.flow.append(entry)
-        
+        entries = []
+        add_entry = lambda item: entries.append(LibraryEntry(item))
+
+        threads = set(Async(add_entry, None, item) for item in items)
+        while threads:
+            threads = set(thread for thread in threads if thread.is_alive())
+            sleep(.1)
+
+        for entry in entries: self.flow.append(entry)
+
         self.placeholder.set_visible(False)
         self.scroll.set_visible(True)
