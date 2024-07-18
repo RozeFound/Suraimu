@@ -1,0 +1,10 @@
+[package]
+name = "suraimu"
+version = "0.0.0-dev"
+rust-version = "1.76"
+edition = "2021"
+
+[dependencies]
+adw = { package = "libadwaita", version = "0.7", features = ["v1_5"] }
+gettext-rs = { version = "0.7", features = ["gettext-system"] }
+gtk = { package = "gtk4", version = "0.9", features = ["gnome_45"] }

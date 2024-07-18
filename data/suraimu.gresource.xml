@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+  <gresource prefix="/com/github/RozeFound/Suraimu">
+
+    <file>style.css</file>
+
+    <file preprocess="xml-stripblanks">ui/test_window.ui</file>
+    
+    <file preprocess="xml-stripblanks">ui/about.ui</file>
+    <file preprocess="xml-stripblanks">ui/window.ui</file>
+    <file preprocess="xml-stripblanks">ui/placeholder.ui</file>
+    <file preprocess="xml-stripblanks">ui/theme-switcher.ui</file>
+    <file preprocess="xml-stripblanks">ui/library.ui</file>
+    <file preprocess="xml-stripblanks">ui/library-entry.ui</file>
+    <file preprocess="xml-stripblanks">ui/info-window.ui</file>
+    <file preprocess="xml-stripblanks">ui/preferences-window.ui</file>
+    <file preprocess="xml-stripblanks" alias="gtk/help-overlay.ui">ui/help_overlay.ui</file>
+
+  </gresource>
+
+  <gresource prefix="/com/github/RozeFound/Suraimu/icons/scalable/actions">
+    <file preprocess="xml-stripblanks" alias="people-symbolic.svg">icons/hicolor/symbolic/people-symbolic.svg</file>
+  </gresource>
+
+</gresources>

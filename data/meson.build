@@ -1,24 +1,14 @@
-conf = configuration_data()
+gnome = import('gnome')
 
-conf.set('APP_NAME', APP_NAME)
-conf.set('APP_ID', APP_ID)
+subdir('ui')
 
-APP_ICON = ('@0@.svg').format(APP_ID)
-APP_SYMBOLIC_ICON = ('@0@-symbolic.svg').format(APP_ID)
-
-desktop_file = configure_file(
-          input: 'com.github.RozeFound.Suraimu.desktop.in.in',
-         output: 'com.github.RozeFound.Suraimu.desktop.in',
-  configuration: conf
-)
-
-desktop = i18n.merge_file(
-        input: desktop_file,
+desktop_file = i18n.merge_file(
+        input: 'com.github.RozeFound.Suraimu.desktop.in',
        output: 'com.github.RozeFound.Suraimu.desktop',
          type: 'desktop',
-       po_dir: 'po',
+       po_dir: '../po',
       install: true,
-  install_dir: join_paths(get_option('datadir'), 'applications')
+  install_dir: get_option('datadir') / 'applications'
 )
 
 desktop_utils = find_program('desktop-file-validate', required: false)
@@ -26,42 +16,34 @@ if desktop_utils.found()
   test('Validate desktop file', desktop_utils, args: [desktop_file])
 endif
 
-appstream_file = i18n.merge_file(
-        input: 'com.github.RozeFound.Suraimu.appdata.xml.in',
-       output: 'com.github.RozeFound.Suraimu.appdata.xml',
-       po_dir: 'po',
-      install: true,
-  install_dir: join_paths(get_option('datadir'), 'appdata')
+gnome.compile_resources('suraimu',
+  'suraimu.gresource.xml',
+  gresource_bundle: true,
+  source_dir: meson.current_build_dir(),
+  install: true,
+  install_dir: PKGDATA_DIR,
+  dependencies: blueprints
 )
 
-appstream_util = find_program('appstream-util', required: false)
-if appstream_util.found()
-  test('Validate appstream file', appstream_util, args: ['validate', appstream_file])
-endif
+appstream_file = i18n.merge_file(
+        input: 'com.github.RozeFound.Suraimu.metainfo.xml.in',
+       output: 'com.github.RozeFound.Suraimu.metainfo.xml',
+       po_dir: '../po',
+      install: true,
+  install_dir: get_option('datadir') / 'metainfo'
+)
+
+appstreamcli = find_program('appstreamcli', required: false, disabler: true)
+test('Validate appstream file', appstreamcli,
+     args: ['validate', '--no-net', '--explain', appstream_file])
 
 install_data('com.github.RozeFound.Suraimu.gschema.xml',
-  install_dir: join_paths(get_option('datadir'), 'glib-2.0/schemas')
+  install_dir: get_option('datadir') / 'glib-2.0' / 'schemas'
 )
 
-compile_schemas = find_program('glib-compile-schemas', required: false)
-if compile_schemas.found()
-  test('Validate schema file',
-       compile_schemas,
-       args: ['--strict', '--dry-run', meson.current_source_dir()])
-endif
+compile_schemas = find_program('glib-compile-schemas', required: false, disabler: true)
+test('Validate schema file',
+     compile_schemas,
+     args: ['--strict', '--dry-run', meson.current_source_dir()])
 
-scalable_dir = join_paths('icons', 'hicolor', 'scalable', 'apps')
-install_data ( join_paths(scalable_dir, APP_ICON),
-  install_dir: join_paths(get_option('prefix'), get_option('datadir'), scalable_dir)
-)
-
-symbolic_dir = join_paths('icons', 'hicolor', 'symbolic')
-install_data ( join_paths(symbolic_dir, 'apps', APP_SYMBOLIC_ICON),
-  install_dir: join_paths(get_option('prefix'), get_option('datadir'), symbolic_dir, 'apps')
-)
-
-install_data ( join_paths(symbolic_dir, 'people-symbolic.svg'),
-  install_dir: join_paths(get_option('prefix'), get_option('datadir'), symbolic_dir)
-)
-
-subdir('po')
+subdir('icons')
