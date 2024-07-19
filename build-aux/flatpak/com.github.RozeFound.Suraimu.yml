@@ -15,7 +15,7 @@ finish-args:
   - --socket=wayland
   - --filesystem=~/.var/app/com.valvesoftware.Steam/.steam/steam
   - --filesystem=~/.steam/steam
-  - --env=RUST_LOG=fractal=debug,warn
+  - --env=RUST_LOG=suraimu=debug,warn
   - --env=G_MESSAGES_DEBUG=none
   - --env=RUST_BACKTRACE=1
   - --env=NO_POINTER_VIEWPORT=1

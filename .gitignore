@@ -7,3 +7,4 @@ flatpak-pip-generator
 build
 _build
 target
+gdb.sh
